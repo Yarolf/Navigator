@@ -5,6 +5,15 @@ using System;
 [Serializable]
 public class Route
 {
+    [HideInInspector]
+    public string nameStart;
+    [HideInInspector]
+    public string nameFinish;
+    [HideInInspector]
+    public string extraInfo;
+
+    public List<Vector3> points = new List<Vector3>();
+
     public Route(string nameStart = "", string nameFinish = "", string extraInfo = "")
     {
         this.nameStart = nameStart;
@@ -17,10 +26,19 @@ public class Route
     {
         points.Add(startPoint);
     }
+}
 
-    public string nameStart;
-    public string nameFinish;
-    public string extraInfo;
+class RouteComparer : IEqualityComparer<Route>
+{
+    public bool Equals(Route x, Route y)
+    {
+        if (x.nameStart == y.nameStart && x.nameFinish == y.nameFinish && x.extraInfo == y.extraInfo)
+            return true;
+        return false;
+    }
 
-    public List<Vector3> points = new List<Vector3>();
+    public int GetHashCode(Route obj)
+    {
+        return obj.GetHashCode();
+    }
 }

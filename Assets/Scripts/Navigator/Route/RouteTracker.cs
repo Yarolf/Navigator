@@ -4,68 +4,133 @@ using System.Linq;
 
 public class RouteTracker : MonoBehaviour
 {
-    public ARSceneAdmin arSceneAdmin;
-    public Text Notification;
-    public float distanseToSavePoint = 1;
+    [Header("Скрипты")]
+    [SerializeField]
+    private ARSceneAdmin arSceneAdmin;
+    [SerializeField]
+    private SaveDataButton saveDataButton;
+
+    [Header("Вывод уведомлений")]
+    [SerializeField]
+    private Text _notification;
     
+
+
+    public static float distanseToSavePoint = 1;
+
     private bool isTracking = false;
-    private Route route = new Route();
+    private string startLocation;
 
-    private void Start()
-    {
-        TrackableEventHandler.OnTrackingFoundWithName += FillNames;
-    }
+    private Route _route;
+    public Route Route {get { return _route; } }
 
-    void Update()
+    # region UNITY_MONOBEHAVIOUR_METHODS
+
+    private void Update()
     {
         if (isTracking)
             Track();
     }
 
+    private void Start()
+    {
+        ResetToDefault();
+    }
+
+    #endregion
+
+    #region PUBLIC_METHODS
+
+    /// <summary>
+    /// Вызывается первым, для начала работы с построением пути
+    /// </summary>
+    public void StartTracking()
+    {
+        Prepare();
+        isTracking = true;
+        _notification.text = "Отслеживание начато";
+    }
+
+    /// <summary>
+    /// Обнуляет все изменения, кроме дистанции до записи очередной точки
+    /// </summary>
+    public void ResetToDefault()
+    {
+        isTracking = false;
+        startLocation = null;
+        _route = null;
+        EventsHolder.TargetChanged += arSceneAdmin.Prepare;
+        EventsHolder.MarkerChanged += OnImageScanned;
+        _notification.text = "Отсканируйте маркер";
+    }
+
+    #endregion
+
+    #region PRIVATE_METHODS
+
+    private void Prepare()
+    {
+        arSceneAdmin.Begin();
+        EventsHolder.TargetChanged -= arSceneAdmin.Prepare;
+        _route = new Route(Vector3.zero);
+        FillRouteStartName(startLocation);
+    }
+
+    private void OnImageScanned(ImageMarker marker)
+    {
+        string placeName = marker.OriginalName;
+
+        if (!isTracking) // первое сканирование - начальный пункт
+        {
+            startLocation = placeName;
+        }
+        else if (placeName != _route.nameStart) // второе сканирование - конечный пункт
+        {
+            FillRouteFinishName(placeName);
+            StopTracking();
+        }
+    }
+
+    private void FillRouteStartName(string name)
+    {
+        _route.nameStart = name;
+        //Notification.text = "Start: " + name; --Перенести в отдельное поле
+    }
+
+    private void FillRouteFinishName(string name)
+    {
+        _route.nameFinish = name;
+        // Notification.text = "Finish: " + name; --Перенести в отдельное поле
+    }
+
+    private void FillRouteExtraInfo(string name)
+    {
+        _route.extraInfo = name;
+        // Notification.text = "ExtraInfo: " + name; --Перенести в отдельное поле
+    }
+
+    private void StopTracking()
+    {
+        WritePoint(ARCamera.GetPositionAfterScaning());
+        EventsHolder.MarkerChanged -= OnImageScanned;
+        isTracking = false;
+        saveDataButton.TurnOn();
+        _notification.text = "Отслеживание завершено";
+    }
+
     private void Track()
     {
-        if (ARCamera.GetDistanseFrom(route.points.Last()) > distanseToSavePoint)
+        if (ARCamera.GetDistanseFrom(_route.points.Last()) > distanseToSavePoint)
         {
             WritePoint(ARCamera.GetPositionAfterScaning());
         }
     }
 
-    public Route GetRoute()
-    {
-  // создавать и возвращать новый объект
-        return route;
-    }
-
     private void WritePoint(Vector3 point)
     {
-        route.points.Add(point);
-        Notification.text = ("Добавлена точка: " + point);
+        _route.points.Add(point);
+        _notification.text = ("Добавлена точка: " + point);
     }
 
-    private void FillNames(string name)
-    {
-        if (!isTracking) // сканирую начальный пункт
-        {
-            route = new Route(Vector3.zero);
-            route.nameStart = name;
-            Notification.text = "Start: " + name;
-        }
-        else // второе сканирование - конечный пункт
-        {
-            isTracking = false;
-            route.nameFinish = name;
-            Notification.text = "Finish: " + name;
-            // отписаться от переноса осей сцены
-        }
-
-        //if (route.extraInfo == "") перенести в поле "Сохранить"
-        //    route.extraInfo = Text;
-    }
-
-    public void StartTracking()
-    {
-        //arSceneAdmin.Prepare();
-        isTracking = true;
-        Notification.text = "Начал отслеживание";
-    }
+    #endregion
 }

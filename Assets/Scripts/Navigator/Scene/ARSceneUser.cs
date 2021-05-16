@@ -1,11 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine.UI;
 using UnityEngine;
-
 public class ARSceneUser : ARScene
 {
+    #region UNITY_MONOBEHAVIOUR_METHODS
+
     private void Start()
     {
-        TrackableEventHandler.OnTrackingFoundWithObject += Prepare;
+       EventsHolder.TargetChanged += Prepare;
+        notification.text = "Отсканируйте изображение";
     }
+
+    #endregion
 }

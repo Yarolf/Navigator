@@ -1,26 +1,36 @@
 ﻿using UnityEngine;
+using System;
 public class TrackableEventHandler : DefaultTrackableEventHandler
 {
-    public delegate void TrackableNameHandler(string name);
-    public static event TrackableNameHandler OnTrackingFoundWithName;
+    #region PROTECTED_METHODS
 
-    public delegate void TrackableHandler();
-    public static event TrackableHandler OnTrackingFoundEvent;
-    public static event TrackableHandler OnTrackingLostEvent;
-
-    public delegate void TrackableObjectHandler(Transform obj);
-    public static event TrackableObjectHandler OnTrackingFoundWithObject;
     protected override void OnTrackingFound()
     {
         base.OnTrackingFound();
-        OnTrackingFoundWithName?.Invoke(mTrackableBehaviour.TrackableName);
-        OnTrackingFoundEvent?.Invoke();
-        OnTrackingFoundWithObject?.Invoke(mTrackableBehaviour.gameObject.transform);
+        TrackingFound();
     }
 
     protected override void OnTrackingLost()
     {
         base.OnTrackingLost();
-        OnTrackingLostEvent?.Invoke();
+        TrackingLost();
     }
+
+    #endregion
+
+    #region PRIVATE_METHODS
+
+    private void TrackingFound()
+    {
+        EventsHolder.RaiseTrackingFound();
+        EventsHolder.RaiseMarkerChanged(mTrackableBehaviour.gameObject.GetComponent<ImageMarker>());
+        EventsHolder.RaiseTargetChanged(mTrackableBehaviour.gameObject);
+    }
+
+    private void TrackingLost()
+    {
+        EventsHolder.RaiseTrackingLost();
+    }
+
+    #endregion
 }
