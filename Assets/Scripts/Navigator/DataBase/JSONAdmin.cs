@@ -10,19 +10,29 @@ public class JSONAdmin : JSON
 
     public void SaveData()
     {
-        WriteData();
-        File.WriteAllText(path, JsonUtility.ToJson(data));
-        Notification.text = ("Данные сохранены!");
+        if (WriteData())
+        {
+            File.WriteAllText(path, JsonUtility.ToJson(data));
+            Notification.SetText("Данные сохранены!");
+        }
     }
 
     #endregion
 
     #region PRIVATE_METHODS
 
-    private void WriteData()
+    private bool WriteData()
     {
-        data.AddRoute(routeTracker.Route);
-        Notification.text = ("Путь добавлен!");
+        if (data.AddRoute(routeTracker.Route))
+        {
+            Notification.SetText("Путь добавлен!");
+            return true;
+        }
+        else
+        {
+            Notification.SetText("Путь существует!");
+            return false;
+        }
     }
 
     #endregion

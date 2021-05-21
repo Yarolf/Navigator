@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Vuforia;
+
 public class ImageMarker : MonoBehaviour
 {
     [Header("Имя для выпадающего меню")]

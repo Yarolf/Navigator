@@ -1,13 +1,24 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class DropDownDestination : MonoBehaviour
 {
+    [SerializeField]
+    private ChoiceWindow choiceWindow;
+
     [HideInInspector]
-    public Dropdown destinationDropDown;
+    public Dropdown dropDown;
+
+    public static Action DropDownUpdated;
+
+    private void Awake()
+    {
+        dropDown = gameObject.GetComponent<Dropdown>();
+    }
+
     void Start()
     {
-        destinationDropDown = gameObject.GetComponent<Dropdown>();
         EventsHolder.MarkerChanged += UpdateDestinationDropDown;
         EventsHolder.TrackingLost += Hide;
     }
@@ -16,26 +27,27 @@ public class DropDownDestination : MonoBehaviour
 
     private void UpdateDestinationDropDown(ImageMarker marker)
     {
-        destinationDropDown.options.Clear();
+        dropDown.options.Clear();
         foreach (var _marker in ARScene.Markers)
         {
             if (_marker != marker)
-                destinationDropDown.options.Add(new Dropdown.OptionData(_marker.TranslitedName));
+                dropDown.options.Add(new Dropdown.OptionData(_marker.TranslitedName));
         }
-        destinationDropDown.captionText.text = destinationDropDown.options[0].text;
+        dropDown.captionText.text = dropDown.options[0].text;
         Show();
+        DropDownUpdated?.Invoke();
     }
 
     private void Show()
     {
-        destinationDropDown.interactable = true;
-        destinationDropDown.Show();
+        dropDown.interactable = true;
+        dropDown.Show();
     }
 
     private void Hide()
     {
-        destinationDropDown.Hide();
-        destinationDropDown.interactable = false;
+        dropDown.Hide();
+        dropDown.interactable = false;
     }
 
     #endregion

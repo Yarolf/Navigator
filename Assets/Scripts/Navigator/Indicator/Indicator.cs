@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Indicator: MonoBehaviour
 {
@@ -8,15 +7,16 @@ public class Indicator: MonoBehaviour
 
     public static float moovingSpeed = 1;
     public static float distanceToMoveNext = 1;
+    public static float userHeight;
     
     #endregion
 
     #region PIVATE_MEMBER_VARIABLES
 
     [SerializeField]
-    private Text _notification;
-    [SerializeField]
     private ARSceneUser arSceneUser;
+    [SerializeField]
+    private ChoiceWindow choiceWindow;
 
     private static Route _route;
     private static GameObject _prephab;
@@ -69,7 +69,7 @@ public class Indicator: MonoBehaviour
         transform.localPosition = Vector3.zero;
         _curentPositionIndex = 0;
         _route = null;
-        _notification.text = "Отсканируйте изображение";
+
         _prephab.SetActive(false);
     }
 
@@ -84,9 +84,8 @@ public class Indicator: MonoBehaviour
 
     private void FinishRoute()
     {
-        EventsHolder.TargetChanged += arSceneUser.Prepare;
-        _notification.text = "Вы пришли!";
-        ResetToDefault();
+        Notification.SetText("Вы пришли!");
+        choiceWindow.resetButton.ResetToDefault();
     }
 
     private void MoveNext()
@@ -96,8 +95,8 @@ public class Indicator: MonoBehaviour
             if (_route.points.Count > _curentPositionIndex)
             {
                 StartCoroutine(MoveNextCouratine());
-                _notification.text = "Пройдено точек: " + _curentPositionIndex
-                + " из " + _route.points.Count;
+                Notification.SetText("Пройдено точек: " + _curentPositionIndex
+                + " из " + _route.points.Count);
             }
         }
     }

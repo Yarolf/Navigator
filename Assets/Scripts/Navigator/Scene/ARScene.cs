@@ -5,10 +5,6 @@ using UnityEngine.UI;
 
 public class ARScene : MonoBehaviour
 {
-    [SerializeField]
-    [Header("Вывод уведомления")]
-    protected Text notification;
-
     public delegate void PreparationFinishedEventHandler();
     public static event PreparationFinishedEventHandler PreparationFinished;
 
@@ -32,7 +28,6 @@ public class ARScene : MonoBehaviour
     {
         markers = FindObjectsOfType<ImageMarker>().ToList();
         scene = gameObject;
-        EventsHolder.MarkerChanged += ShowImageName;
     }
 
     #endregion
@@ -88,11 +83,6 @@ public class ARScene : MonoBehaviour
     {
         gameObject.transform.localPosition = Vector3.zero;
         gameObject.transform.localEulerAngles = CorrectionAngle.WALL;
-    }
-
-    private void ShowImageName(ImageMarker marker)
-    {
-        notification.text = marker.TranslitedName;
     }
 
     private static class CorrectionAngle

@@ -8,11 +8,7 @@ public class RouteTracker : MonoBehaviour
     [SerializeField]
     private ARSceneAdmin arSceneAdmin;
     [SerializeField]
-    private SaveDataButton saveDataButton;
-
-    [Header("Вывод уведомлений")]
-    [SerializeField]
-    private Text _notification;
+    private SaveRouteSettingsPanel saveRouteSettings;
     
 
 
@@ -48,7 +44,7 @@ public class RouteTracker : MonoBehaviour
     {
         Prepare();
         isTracking = true;
-        _notification.text = "Отслеживание начато";
+        Notification.SetText("Отслеживание начато");
     }
 
     /// <summary>
@@ -61,7 +57,7 @@ public class RouteTracker : MonoBehaviour
         _route = null;
         EventsHolder.TargetChanged += arSceneAdmin.Prepare;
         EventsHolder.MarkerChanged += OnImageScanned;
-        _notification.text = "Отсканируйте маркер";
+        Notification.SetText("Отсканируйте маркер");
     }
 
     #endregion
@@ -78,13 +74,13 @@ public class RouteTracker : MonoBehaviour
 
     private void OnImageScanned(ImageMarker marker)
     {
-        string placeName = marker.OriginalName;
+        string placeName = marker.TranslitedName;
 
         if (!isTracking) // первое сканирование - начальный пункт
         {
             startLocation = placeName;
         }
-        else if (placeName != _route.nameStart) // второе сканирование - конечный пункт
+        else if (placeName != _route.startName) // второе сканирование - конечный пункт
         {
             FillRouteFinishName(placeName);
             StopTracking();
@@ -93,17 +89,17 @@ public class RouteTracker : MonoBehaviour
 
     private void FillRouteStartName(string name)
     {
-        _route.nameStart = name;
+        _route.startName = name;
         //Notification.text = "Start: " + name; --Перенести в отдельное поле
     }
 
     private void FillRouteFinishName(string name)
     {
-        _route.nameFinish = name;
+        _route.finishName = name;
         // Notification.text = "Finish: " + name; --Перенести в отдельное поле
     }
 
-    private void FillRouteExtraInfo(string name)
+    public void FillRouteExtraInfo(string name)
     {
         _route.extraInfo = name;
         // Notification.text = "ExtraInfo: " + name; --Перенести в отдельное поле
@@ -114,8 +110,16 @@ public class RouteTracker : MonoBehaviour
         WritePoint(ARCamera.GetPositionAfterScaning());
         EventsHolder.MarkerChanged -= OnImageScanned;
         isTracking = false;
-        saveDataButton.TurnOn();
-        _notification.text = "Отслеживание завершено";
+        Notification.SetText("Отслеживание завершено");
+        ShowSaveSettings();
+    }
+
+    private void ShowSaveSettings()
+    {
+        saveRouteSettings.gameObject.SetActive(true);
+        saveRouteSettings.startPoint.text = _route.startName;
+        saveRouteSettings.endPoint.text = _route.finishName;
+        gameObject.SetActive(false);
     }
 
     private void Track()
@@ -129,7 +133,7 @@ public class RouteTracker : MonoBehaviour
     private void WritePoint(Vector3 point)
     {
         _route.points.Add(point);
-        _notification.text = ("Добавлена точка: " + point);
+        Notification.SetText("Добавлена точка: " + point);
     }
 
     #endregion

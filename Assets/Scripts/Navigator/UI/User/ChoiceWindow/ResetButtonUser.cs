@@ -3,6 +3,9 @@ using UnityEngine.UI;
 
 public class ResetButtonUser : MonoBehaviour
 {
+    [Header("Скрипты")]
+    [SerializeField]
+    ChoiceWindow choiceWindow;
     [SerializeField]
     Indicator indicator;
     [SerializeField]
@@ -27,16 +30,19 @@ public class ResetButtonUser : MonoBehaviour
         _button.interactable = true;
     }
 
-    #endregion
-
-    #region PRIVATE_METHODS
-
-    private void ResetToDefault()
+    public void ResetToDefault()
     {
         EventsHolder.TargetChanged += arSceneUser.Prepare;
         indicator.ResetToDefault();
+        choiceWindow.ResetStartName();
+        choiceWindow.startRouteButton.TurnOn();
+        Notification.SetText("Отсканируйте изображение");
         TurnOff();
     }
+
+    #endregion
+
+    #region PRIVATE_METHODS
 
     private void TurnOff()
     {

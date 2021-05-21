@@ -6,9 +6,9 @@ using System;
 public class Route
 {
     [HideInInspector]
-    public string nameStart;
+    public string startName;
     [HideInInspector]
-    public string nameFinish;
+    public string finishName;
     [HideInInspector]
     public string extraInfo;
 
@@ -16,8 +16,8 @@ public class Route
 
     public Route(string nameStart = "", string nameFinish = "", string extraInfo = "")
     {
-        this.nameStart = nameStart;
-        this.nameFinish = nameFinish;
+        this.startName = nameStart;
+        this.finishName = nameFinish;
         this.extraInfo = extraInfo;
     }
 
@@ -32,7 +32,7 @@ class RouteComparer : IEqualityComparer<Route>
 {
     public bool Equals(Route x, Route y)
     {
-        if (x.nameStart == y.nameStart && x.nameFinish == y.nameFinish && x.extraInfo == y.extraInfo)
+        if (x.startName == y.startName && x.finishName == y.finishName && x.extraInfo == y.extraInfo)
             return true;
         return false;
     }

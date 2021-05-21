@@ -4,9 +4,6 @@ using System.IO;
 
 public class JSON : MonoBehaviour
 {
-    [Header("Вывод уведомлений")]
-    public Text Notification;
-
     [HideInInspector]
     public Data data = new Data();
 
@@ -23,6 +20,11 @@ public class JSON : MonoBehaviour
 #endif
     }
 
+    private void Start()
+    {
+        data = ReadData();
+    }
+
     public Data ReadData()
     {
         if (File.Exists(path))
@@ -31,7 +33,7 @@ public class JSON : MonoBehaviour
             //Notification.text = ("Загружено " + data.routes.Count + "путей"); // Убрать!
             return data;
         }
-        Notification.text = ("Файл не найден!"); //Убрать
-        return null;
+        Notification.SetText("Файл не найден!"); //Убрать
+        return new Data();
     }
 }

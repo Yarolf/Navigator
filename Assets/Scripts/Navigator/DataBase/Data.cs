@@ -21,4 +21,29 @@ public class Data
         routes.Add(route);
         return true;
     }
+
+    public List<Route> FindRoutes(string startName, string finishName)
+    {
+        List<Route> routeList = new List<Route>();
+
+        foreach (var route in routes)
+        {
+            if (route.startName == startName
+                && route.finishName == finishName)
+                routeList.Add(route);
+        }
+        return routeList;
+    }
+
+    public Route FindRoute(string startName, string finishName, string extraInfo)
+    {
+        foreach (var route in routes)
+        {
+            if (route.startName == startName && 
+                route.finishName == finishName && 
+                route.extraInfo == extraInfo)
+                return route;
+        }
+        return null;
+    }
 }

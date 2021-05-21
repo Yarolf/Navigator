@@ -18,6 +18,7 @@ public class StartTrackingButton : MonoBehaviour
         startTrackingBtn = gameObject.GetComponent<Button>();
         startTrackingBtn.onClick.AddListener(routeTracker.StartTracking);
         startTrackingBtn.onClick.AddListener(resetButtonAdmin.TurnOn);
+        startTrackingBtn.onClick.AddListener(TurnOff);
         EventsHolder.TrackingFound += TurnOn;
         EventsHolder.TrackingLost += TurnOff;
     }

@@ -10,8 +10,7 @@ public class StartRouteButton : MonoBehaviour
     ChoiceWindow choiceWindow;
     [SerializeField]
     Indicator indicator;
-    [SerializeField]
-    ResetButtonUser resetButton;
+
 
     private Button _button;
     public Button button { get { return _button; } }
@@ -26,6 +25,19 @@ public class StartRouteButton : MonoBehaviour
 
     #endregion
 
+    #region PUBLIC_METHODS
+    public void TurnOn()
+    {
+        _button.interactable = true;
+    }
+
+    public void TurnOff()
+    {
+        _button.interactable = false;
+    }
+
+    #endregion
+
     #region PRIVATE_METHODS
 
     private void SetTasks()
@@ -33,22 +45,12 @@ public class StartRouteButton : MonoBehaviour
         _button.onClick.AddListener(arSceneUser.Begin);
         _button.onClick.AddListener(TurnOff);
         _button.onClick.AddListener(indicator.StartRoute);
-        _button.onClick.AddListener(choiceWindow.SetIndicatorRoute);
         _button.onClick.AddListener(() => EventsHolder.TargetChanged
                                             -= arSceneUser.Prepare);
-        _button.onClick.AddListener(resetButton.TurnOn);
+        _button.onClick.AddListener(choiceWindow.resetButton.TurnOn);
         EventsHolder.TrackingFound += TurnOn;
         EventsHolder.TrackingLost += TurnOff;
-    }
-
-    private void TurnOn()
-    {
-        _button.interactable = true;
-    }
-
-    private void TurnOff()
-    {
-        _button.interactable = false;
+        _button.onClick.AddListener(choiceWindow.SetIndicatorRoute);
     }
 
     #endregion

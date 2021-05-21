@@ -7,7 +7,7 @@ public class ARSceneUser : ARScene
     private void Start()
     {
        EventsHolder.TargetChanged += Prepare;
-        notification.text = "Отсканируйте изображение";
+        Notification.SetText("Отсканируйте изображение");
     }
 
     #endregion
